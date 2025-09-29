@@ -11,6 +11,8 @@
 #include <time.h>
 #include <pthread.h>
 #include <stdint.h>
+#include <string.h>
+#include <unistd.h>
 
 // ---  INITIALISATION DU RN  ---
 
@@ -41,10 +43,31 @@ float inputs[4][ENTREE] = {
 // la table de sortie AND
 static const float sortie_AND[4] = {0,0,0,1};
 // la table de sortie OR
-float const targets_OR[4] = {0,1,1,1};
+float const sortie_OR[4] = {0,1,1,1};
 // la table de sortie XOR
-float const targets_XOR[4] = {0,1,1,0};
+float const sortie_XOR[4] = {0,1,1,0};
 
+// pour choisir la porte logique
+
+int choisir_porte(const float **targets, char **porte){
+    char choix[10];
+    printf("Choisis une porte logique que tu veux (AND/OR/XOR) : ");
+    scanf("%9s", choix);
+    if (strcasecmp(choix, "AND") == 0) {
+        *targets = sortie_AND;
+        *porte = "AND";
+    } else if (strcasecmp(choix, "OR") == 0) {
+        *targets = sortie_OR;
+        *porte = "OR";
+    } else if (strcasecmp(choix, "XOR") == 0) {
+        *targets = sortie_XOR;
+        *porte = "XOR";
+    } else {
+        printf("Porte non reconnue !\n");
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
 
 // ---  INITIALISATION DES THREADS  ---
 
@@ -58,6 +81,9 @@ typedef struct {
     // int epochs; 
     int thread_id; // les threads 
 } ThreadPL;
+
+// mutex
+pthread_mutex_t print_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // ------------------------------------------
 
@@ -147,11 +173,136 @@ void propArriere(RNA *reseau, float entree[ENTREE], double cs[CACHEE],
     reseau->b_s -= eta * delta_s;
 }
 
+void train(RNA *reseau, const float targets[4], int epochs, float eta) {
+    double cs[CACHEE];
+    for(int e = 0; e < epochs; e++) {
+        double mse_epoch = 0.0;
+        for(int i = 0; i < 4; i++) {
+            double y_pred = propAvant(reseau, inputs[i], cs);
+            propArriere(reseau, inputs[i], cs, y_pred, targets[i], eta);
+            double diff = targets[i] - y_pred;
+            mse_epoch += diff * diff;
+        }
+
+        mse_epoch /= 4.0;
+        if ((e % 1000) == 0) {
+            pthread_mutex_lock(&print_mutex);
+            printf("[Train] epoch %5d  MSE = %.6f\n", e, mse_epoch);
+            pthread_mutex_unlock(&print_mutex);
+            usleep(50000); // 50 ms
+        } 
+    }
+}
+
+void test_network(const RNA *reseau, const float targets[4], const char *porte) {
+    double cs[CACHEE];
+    double mse = 0.0;
+    int correct = 0;
+    pthread_mutex_lock(&print_mutex);
+    printf("---- Test %s ----\n", porte);
+    for (int s = 0; s < 4; ++s) {
+        double y = propAvant((RNA *)reseau, inputs[s], cs);
+        printf("in=(%.1f, %.1f) -> y=%.6f target=%.1f\n",
+               inputs[s][0], inputs[s][1], y, targets[s]);
+        double d = targets[s] - y;
+        mse += d * d;
+        int pred = (y >= 0.5) ? 1 : 0;
+        if (pred == (int)targets[s]) correct++;
+    }
+    mse = 0.5 * (mse / 4.0);
+    printf("MSE(avg, 0.5 factor)=%.6f  accuracy=%d/4\n\n", mse, correct);
+    pthread_mutex_unlock(&print_mutex);
+}
+
+void *thread_func(void *arg) {
+    ThreadPL *tp = (ThreadPL *)arg;
+
+    /* initialisation du réseau avec graine locale (rand_r thread-safe) */
+    init_reseau(&tp->reseau, &tp->seed);
+
+    pthread_mutex_lock(&print_mutex);
+    printf("Thread %d: porte=%s seed=%u eta=%.3f\n",
+           tp->thread_id, tp->pl, tp->seed, tp->eta);
+    pthread_mutex_unlock(&print_mutex);
+
+    /* entraîner */
+    train(&tp->reseau, tp->sortie, EPOCHS, tp->eta);
+
+    /* tester */
+    test_network(&tp->reseau, tp->sortie, tp->pl);
+
+    return NULL;
+}
+
 // ---
 
 int main() {
 
-srand(time(NULL));
+    // pour le random
+    srand(time(NULL));
 
-return EXIT_SUCCESS;
+    // les threads pour chaque porte
+    pthread_t threads[3];
+    ThreadPL params[3];
+
+    //code pour faire les portes d'un coup
+    const float *targets[3] = {sortie_AND, sortie_OR, sortie_XOR};
+    char *porte[3] = {"AND", "OR", "XOR"};
+
+    for(int i = 0; i < 3; i++) {
+        params[i].inputs = inputs;
+        params[i].sortie = targets[i];
+        params[i].pl = porte[i];
+        params[i].seed = rand();
+        params[i].eta = 0.5;
+        params[i].thread_id = i;
+
+        if(pthread_create(&threads[i], NULL, thread_func, &params[i])) {
+            fprintf(stderr, "Erreur création thread %d\n", i);
+            perror("pthread_create");
+            return EXIT_FAILURE;
+        }
+    }
+
+    for(int th = 0; th < 3; th++){
+        pthread_join(threads[th], NULL);
+    }
+
+    // code pour demander une seul porte logique
+    // pthread_t thread;
+    // ThreadPL param;
+
+    // const float *targets;
+    // char *porte;
+
+    // // choisir la porte
+    // if (choisir_porte(&targets, &porte) != 0) {
+    //     return EXIT_FAILURE;
+    // }
+
+    // // remplir les paramètres du thread
+    // param.inputs = inputs;
+    // param.sortie = targets;
+    // param.pl = porte;
+    // param.seed = rand();
+    // param.eta = 0.5;
+    // param.thread_id = 0;
+
+    // time_t start = time(NULL);
+
+    // // créer le thread
+    // if (pthread_create(&thread, NULL, thread_func, &param)) {
+    //     fprintf(stderr, "Erreur création thread\n");
+    //     perror("pthread_create");
+    //     return EXIT_FAILURE;
+    // }
+
+    // // attendre la fin
+    // pthread_join(thread, NULL);
+
+    // time_t end = time(NULL);
+
+    // printf("Temps total d'exécution : %ld secondes\n", end - start);
+
+    return EXIT_SUCCESS;
 }
