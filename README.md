@@ -35,23 +35,45 @@ Les réseaux ont été entraînés sur les tables de vérité suivantes :
 - **Fonction coût** : Erreur Quadratique Moyenne (MSE)
 - **Optimisation** : Descente de gradient stochastique (SGD)
 
-## Comment faire ?
+## Methodologie
 
  ### Définir le réseaux et ses paramètres
- - Création d’une structure RNA pour stocker les   poids et biais
- - Initialisation aléatoire des poids et biais
+ - Création d’une structure RNA pour stocker les poids et biais
+`w_ce[CACHEE][ENTREE]` : poids entre la couche d’entrée et la couche cachée.
+`b_c[CACHEE]` : biais pour chaque neurone de la couche cachée.
+`w_cs[CACHEE]` : poids entre la couche cachée et la sortie.
+`b_s `: biais du neurone de sortie.
+
+ - Initialisation des paramètres : Les poids et biais sont initialisés aléatoirement dans l’intervalle [-0,5, 0,5] pour éviter la symétrie et permettre au réseau de commencer l’apprentissage de manière différente pour chaque neurone.
+
+
  ### Fonction d'activation Sigmoid -> Sigmoid'
  - Sigmoid = 1 / (1 + exp(-x))
+ transforme la somme pondérée des entrées d’un neurone en une valeur comprise entre 0 et 1
  - Sigmoid' = y*(1-y)
+ utilisée pour la rétropropagation afin de calculer comment ajuster les poids en fonction de l’erreur.
 
  ### Propagation avant (Forward)
- - Calcul des sorties de la couche cachée
- - Calcul de la sortie finale du réseau
+ - Pour chaque entrée `(E1, E2)` : 
+     - on calcul la somme pondérée pour chaque neurone de la couche cachée
+     - on applique Sigmoid pour avoir la sortie de chaque neurone dans la couche cachée
+     - Finamalement on calcul la sortie finale donc la somme pondérée des sorties cachées + biais sortie puis on l'a met dans Sigmoid
+ - et on obtiens y_pred du reseau pour une entrée donnée
+ 
 
  ### Propagation arrière (backward)
- - Calculer l’erreur sur la sortie 
- - Calculer les deltas Propagation de l’erreur     vers la couche cachée
+ - Calculer l’erreur sur la sortie : différence entre la sortie prédite et la sortie cible `(y_pred - target)`
+ - Calculer les deltas Propagation de l’erreur     vers la couche cachée : applique la dérivée de sigmoid à l’erreur pour déterminer comment corriger la sortie.
+ - Propagation vers la couche cachée : chaque neurone caché reçoit une part de l’erreur de sortie proportionnelle à son poids vers la sortie.
  - Mettre à jour les poids et biais
+```c
+w_cs[i] = w_cs[i] - eta * delta_s * cs[i]
+w_ce[i][j] = w_ce[i][j] - eta * delta_c[i] * input[j]
+b_c[i] = b_c[i] - eta * delta_c[i]
+b_s = b_s - eta * delta_s
+```
+
+où `eta` est le taux d’apprentissage
 
  ### Multi-threading 
  - 1 thread = porte logique(AND, OR, XOR) Chaque   thread entraîne un réseau pour une porte             logique différente (AND, OR, XOR)
@@ -63,7 +85,7 @@ Les réseaux ont été entraînés sur les tables de vérité suivantes :
 ### Technologie utilisé
 
 - **Environnement de développement :**VSCode
-- Terminal (linux Ubuntu)
+- Terminal powershell avec un wsl(linux Ubuntu)
 - **Langage** : C
 - **Bibliothèques** : 
 ``` 
