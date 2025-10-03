@@ -19,7 +19,7 @@
 #define ENTREE 2
 #define CACHEE 3 // nombre de neurones
 #define SORTIE 1
-#define EPOCHS 10000
+#define EPOCHS 10
 
 // base de la structure du réseau neuronal
 typedef struct {
@@ -47,33 +47,33 @@ float const sortie_OR[4] = {0,1,1,1};
 // la table de sortie XOR
 float const sortie_XOR[4] = {0,1,1,0};
 
-// pour choisir la porte logique
+// // pour choisir la porte logique
 
-int choisir_porte(const float **targets, char **porte){
-    char choix[10];
-    printf("Choisis une porte logique que tu veux (AND/OR/XOR) : ");
-    scanf("%9s", choix);
-    if (strcasecmp(choix, "AND") == 0) {
-        *targets = sortie_AND;
-        *porte = "AND";
-    } else if (strcasecmp(choix, "OR") == 0) {
-        *targets = sortie_OR;
-        *porte = "OR";
-    } else if (strcasecmp(choix, "XOR") == 0) {
-        *targets = sortie_XOR;
-        *porte = "XOR";
-    } else {
-        printf("Porte non reconnue !\n");
-        return EXIT_FAILURE;
-    }
-    return EXIT_SUCCESS;
-}
+// int choisir_porte(const float **targets, char **porte){
+//     char choix[10];
+//     printf("Choisis une porte logique que tu veux (AND/OR/XOR) : ");
+//     scanf("%9s", choix);
+//     if (strcasecmp(choix, "AND") == 0) {
+//         *targets = sortie_AND;
+//         *porte = "AND";
+//     } else if (strcasecmp(choix, "OR") == 0) {
+//         *targets = sortie_OR;
+//         *porte = "OR";
+//     } else if (strcasecmp(choix, "XOR") == 0) {
+//         *targets = sortie_XOR;
+//         *porte = "XOR";
+//     } else {
+//         printf("Porte non reconnue !\n");
+//         return EXIT_FAILURE;
+//     }
+//     return EXIT_SUCCESS;
+// }
 
 // ---  INITIALISATION DES THREADS  ---
 
 typedef struct {
     RNA reseau;
-    float (*inputs)[ENTREE]; // nos datas E1 et E2
+    float (*inputs)[ENTREE]; // nos datas a input E1 et E2
     const float *sortie; // target la réponse après l'apprentissage
     char *pl; // pour porte logique
     unsigned int seed;// pour le random
@@ -217,7 +217,7 @@ void test_network(const RNA *reseau, const float targets[4], const char *porte) 
 void *thread_func(void *arg) {
     ThreadPL *tp = (ThreadPL *)arg;
 
-    /* initialisation du réseau avec graine locale (rand_r thread-safe) */
+    /* initialisation du réseau avec seed */
     init_reseau(&tp->reseau, &tp->seed);
 
     pthread_mutex_lock(&print_mutex);
