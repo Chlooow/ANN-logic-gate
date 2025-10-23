@@ -179,4 +179,4 @@ Lien du compte rendu sur Hackmd : https://hackmd.io/@CholorSplash/B1ROo673el
 
 - Essayer de faire des Batches ?
 
-- Augmenter potentiellement l'ETA et EPOCHS
+- Augmenter potentiellement l'ETA et EPOCHS et mettre l'ETA en variable globale
