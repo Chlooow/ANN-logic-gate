@@ -175,8 +175,6 @@ Lien du compte rendu sur Hackmd : https://hackmd.io/@CholorSplash/B1ROo673el
 
 ### Feedback du professeur (Le client) (23/10/2025)
 
-- Attention il y avait une erreur dans la fonction du MSE j'ai inversé output et target => une précision catastrophique (ex : 0.000003...etc).
-
 - Essayer de faire des Batches ?
 
 - Augmenter potentiellement l'ETA et EPOCHS et mettre l'ETA en variable globale
