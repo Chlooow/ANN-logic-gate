@@ -13,7 +13,7 @@ Ce projet sert à appliquer la notion de Deep Learning avec le réseau de neuron
 
 Un RNA est un modèle inspiré du cerveau humain, utilisé pour l’apprentissage automatique. Il est capable d’apprendre des relations complexes entre des entrées et des sorties grâce à un processus itératif de propagation avant et de rétropropagation.
 
-## Les données
+## Les données utilisés
 Les réseaux ont été entraînés sur les tables de vérité suivantes :
 
 - AND : 0,0 → 0 ; 0,1 → 0 ; 1,0 → 0 ; 1,1 → 1
@@ -59,7 +59,6 @@ Les réseaux ont été entraînés sur les tables de vérité suivantes :
      - on applique Sigmoid pour avoir la sortie de chaque neurone dans la couche cachée
      - Finamalement on calcul la sortie finale donc la somme pondérée des sorties cachées + biais sortie puis on l'a met dans Sigmoid
  - et on obtiens y_pred du reseau pour une entrée donnée
- 
 
  ### Propagation arrière (backward)
  - Calculer l’erreur sur la sortie : différence entre la sortie prédite et la sortie cible `(y_pred - target)`
@@ -76,9 +75,9 @@ b_s = b_s - eta * delta_s
 où `eta` est le taux d’apprentissage
 
  ### Multi-threading 
- - 1 thread = porte logique(AND, OR, XOR) Chaque   thread entraîne un réseau pour une porte             logique différente (AND, OR, XOR)
+ - 1 thread = porte logique(AND, OR, XOR) Chaque thread entraîne un réseau pour une porte logique différente (AND, OR, XOR)
  - Chaque thread a ses propres poids et biais
- - Utilisation d’un mutex pour l'affichage (pour   synchroniser l’affichage)
+ - Utilisation d’un mutex pour l'affichage (pour synchroniser l’affichage)
 
 ------
 
@@ -98,6 +97,12 @@ où `eta` est le taux d’apprentissage
 #include <string.h>
 #include <unistd.h>
 ```
+### Comment lancer ?
+
+```shell=
+gcc -o rna rna.c -lpthread -lm
+./rna
+```
 
 ### Ressources utilisées
 
@@ -107,18 +112,21 @@ où `eta` est le taux d’apprentissage
 
 ### Bug et problèmes rencontrés
 
-- Compréhension du fonctionnement d’une couche cachée : Passer d’un perceptron simple à un réseau avec une couche cachée a nécessité de bien comprendre comment les neurones cachés calculent leurs sorties et propagent l’erreur lors de la rétropropagation.
+- Compréhension du fonctionnement d’une couche cachée au début: Passer d’un perceptron simple à un réseau avec une couche cachée a nécessité de bien comprendre comment les neurones cachés calculent leurs sorties et propagent l’erreur lors de la rétropropagation.
 
 - Implémentation en C : Structurer le code pour un RNA multi-couches en C a été plus complexe que pour un perceptron en Python, car il faut gérer manuellement les tableaux de poids, les biais, et la mémoire, sans bénéficier des abstractions et bibliothèques Python.
 
 - Gestion du multithreading : S’assurer que chaque thread utilise ses propres poids et biais tout en protégeant l’affichage via un mutex pour éviter que les résultats se mélangent.
 
+- Ce n'est pas un bug, mais il est vrai qu'a un certain eta, ou epoch, le réseau peux avoir appris très bien ou pas du tout, donc il faut jouer avec les valeurs
+pour bien voir certains résultats...
+
 ### Conclusion
 
-Les réseaux apprennent correctement les fonctions AND, OR, XOR. Un MSE faible et précision maximale (4/4) pour chaque porte.
+Les réseaux apprennent correctement les fonctions AND, OR, XOR. Un MSE faible et précision maximale (4/4) pour chaque porte à epoch 10000.
 Exécution parallèle efficace grâce au multithreading
 
-Le réseau obtient une précision parfaite (4/4) pour les portes logiques simples (AND, OR, XOR) avec un MSE très faible. C’est assez logique pour ce type de problème pour plusieurs raisons : 
+Lorsque le réseau obtient une précision parfaite (4/4) pour les portes logiques simples (AND, OR, XOR) avec un MSE très faible. C’est assez logique pour ce type de problème pour plusieurs raisons : 
 1. Nature des portes logiques (AND, OR)
 Ce sont des problèmes linéairement séparables : on peut séparer les sorties 0 et 1 avec une seule ligne (hyperplan).
 2. Taille du dataset (4 exemples)
@@ -128,7 +136,7 @@ Le jeu de données est minuscule, donc le réseau peut “mémoriser” parfaite
 4. Rétropropagation efficace
 La combinaison de la descente de gradient et de la rétropropagation ajuste rapidement les poids pour atteindre la solution optimale.
 
-La vraie validation est la capacité à résoudre XOR, ce qui montre la puissance de l’architecture multi-couches. Ici, l’overfitting n’est pas un problème, car il n’y a pas d’autres données à généraliser.
+La vraie validation est la capacité à résoudre XOR, ce qui montre la puissance de l’architecture multi-couches. L’overfitting n’est pas un problème, car il n’y a pas d’autres données à généraliser.
 
 Un réseau avec une couche cachée peut facilement créer cette frontière grâce aux neurones.
 
@@ -140,7 +148,7 @@ Le projet a permis de comprendre les concepts fondamentaux des réseaux de neuro
 
 ### Ouverture du projet et améliorations
 
-Extension vers un chatbot : Ce projet de RNA pour portes logiques peut être la base pour un chatbot, comme celui que je développe sur le thème de Bambam, où l’on récupère des tweets, interviews et expressions typiques pour entraîner le réseau. Cela montre comment un RNA peut être appliqué à un contexte réel de traitement de texte et génération de réponses.
+Extension avec des données concrètes. Peut-être vers un chatbot : Ce projet de RNA pour portes logiques peut être la base pour un chatbot, comme celui que je développe sur le thème de Bambam un artiste de Kpop d'origine Thailandaise, où l’on récupère des tweets, interviews et expressions typiques pour entraîner le réseau. Cela montre comment un RNA peut être appliqué à un contexte réel de traitement de texte et génération de réponses.
 
 **Améliorations du code actuel** :
 
@@ -148,6 +156,8 @@ Extension vers un chatbot : Ce projet de RNA pour portes logiques peut être la 
 - Ajouter la fonctionnalité où l’utilisateur peut choisir dynamiquement la porte logique à entraîner via le terminal, ce qui rend l’application plus interactive.
 - Optimiser la convergence et la stabilité du réseau en adaptant dynamiquement le learning rate ou en essayant d’autres fonctions d’activation (ReLU, tanh).
 - Sauvegarder et charger les poids/biais après l’entraînement pour éviter de réentraîner à chaque exécution.
+- Tester avec des valeurs différentes
+- tester avec la porte `NOR`, `NOT` et des portes dîtes de combinaison `(A AND (B OR C))` ...etc
 
 **Perspectives futures** :
 
@@ -156,7 +166,15 @@ Extension vers un chatbot : Ce projet de RNA pour portes logiques peut être la 
 
 ### Crédits et droits
 
-Projet créé par Makoundou Chloé (Cholor)
+Projet et rédaction créé par Makoundou Chloé
 dans le cadre du Master 1 Cursus IBD Informatique et Big Data pour le cours Programmation Concurrente avec monsieur Touati.
 
 Email : Chloe.makpro@gmail.com
+Lien du Github : https://github.com/Chlooow/ANN-logic-gate
+Lien du compte rendu sur Hackmd : https://hackmd.io/@CholorSplash/B1ROo673el
+
+### Feedback du professeur (Le client)
+
+- Attention il y avait une erreur dans la fonction du MSE j'ai inversé output et target => une précision catastrophique (ex : 0.000003...etc).
+
+- Essayer de faire des Batches ?
