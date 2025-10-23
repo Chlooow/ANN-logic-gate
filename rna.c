@@ -17,9 +17,9 @@
 // ---  INITIALISATION DU RN  ---
 
 #define ENTREE 2
-#define CACHEE 3 // nombre de neurones
+#define CACHEE 5 // nombre de neurones
 #define SORTIE 1
-#define EPOCHS 10
+#define EPOCHS 10000 // On met un epoch grand c'est mieu meme si ca converge bien
 
 // base de la structure du réseau neuronal
 typedef struct {
@@ -122,6 +122,7 @@ void init_reseau(RNA *reseau, unsigned int *seed) {
 }
 
 double propAvant(RNA *reseau, float entree[ENTREE], double cs[CACHEE]) {
+    //sortie de chaque neurones cachés
     for (int i = 0; i < CACHEE; i++) {
         double somme = 0.0;
         for (int j = 0; j < ENTREE; j++) {
@@ -130,7 +131,7 @@ double propAvant(RNA *reseau, float entree[ENTREE], double cs[CACHEE]) {
         somme += reseau->b_c[i];
         cs[i] = sigmoid(somme);
     }
-
+    //la somme pondérée des activations cachées vers le neurone de sortie.
     double somme_prime = 0.0;
     for (int i = 0; i < CACHEE; i++) {
         somme_prime += reseau->w_cs[i] * cs[i];
@@ -146,7 +147,8 @@ double propAvant(RNA *reseau, float entree[ENTREE], double cs[CACHEE]) {
 // fonction quadratique
 
 static inline double MSE(double target, double output) {
-    return 0.5 * pow((target-output), 2);
+    return 0.5 * pow((-target+output), 2); // FEEDBACK ATTENTION LA FORMULE DU MSE N'ETAIT PAS CORRECTE ! 
+    //C'est output - target et pas  target - output C'est une petite erreur d'inattention qui peux couter cher
 }
 
 static inline double GradientMSE(double target, double y_pred) {
@@ -210,7 +212,7 @@ void test_network(const RNA *reseau, const float targets[4], const char *porte) 
         if (pred == (int)targets[s]) correct++;
     }
     mse = 0.5 * (mse / 4.0);
-    printf("MSE(avg, 0.5 factor)=%.6f  accuracy=%d/4\n\n", mse, correct);
+    printf("MSE(avg, 0.5 de factor)=%.6f  accuracy=%d/4\n\n", mse, correct);
     pthread_mutex_unlock(&print_mutex);
 }
 
@@ -254,7 +256,7 @@ int main() {
         params[i].sortie = targets[i];
         params[i].pl = porte[i];
         params[i].seed = rand();
-        params[i].eta = 0.5;
+        params[i].eta = 0.05; // Au debut j'avais mis 0.5 par defaut
         params[i].thread_id = i;
 
         if(pthread_create(&threads[i], NULL, thread_func, &params[i])) {
