@@ -123,7 +123,7 @@ pour bien voir certains résultats...
 
 ### Conclusion
 
-Les réseaux apprennent correctement les fonctions AND, OR, XOR. Un MSE faible et précision maximale (4/4) pour chaque porte à epoch 10000.
+Les réseaux apprennent correctement les fonctions AND, OR, XOR. Un MSE faible et précision maximale (4/4) pour chaque porte à epoch 10000 avec un ETA de 0.5 avec 3 neurones. En epoch 10000 et un ETA de 0.05 et 5 neurones cachés on a des résultats catastrophiques pour XOR, mais on voir qu'en epoch 20000 et un ETA 0.05 et 5 neurones cachés on a de bien meilleur résultats pour XOR.
 Exécution parallèle efficace grâce au multithreading
 
 Lorsque le réseau obtient une précision parfaite (4/4) pour les portes logiques simples (AND, OR, XOR) avec un MSE très faible. C’est assez logique pour ce type de problème pour plusieurs raisons : 
@@ -144,6 +144,9 @@ Le projet a permis de comprendre les concepts fondamentaux des réseaux de neuro
 
 ![resultat1](https://hackmd.io/_uploads/SJPaqBdnxg.png)
 ![resultat2](https://hackmd.io/_uploads/ryPaqBu2xl.png)
+![resultat 3](https://hackmd.io/_uploads/rk3QrBYCxg.png)
+![Result3-23112025](https://hackmd.io/_uploads/B1KjBrt0ll.png)
+
 
 
 ### Ouverture du projet et améliorations
@@ -173,8 +176,8 @@ Email : Chloe.makpro@gmail.com
 Lien du Github : https://github.com/Chlooow/ANN-logic-gate
 Lien du compte rendu sur Hackmd : https://hackmd.io/@CholorSplash/B1ROo673el
 
-### Feedback du professeur (Le client) (23/10/2025)
+### Feedback du professeur (Le client)
 
-- Essayer de faire des Batches ?
+- Essayer de faire des Batches ? Car je fais SGD (Descente de Gradient Stochastique)
 
-- Augmenter potentiellement l'ETA et EPOCHS et mettre l'ETA en variable globale
+- ETA pourrait être une variable globale
