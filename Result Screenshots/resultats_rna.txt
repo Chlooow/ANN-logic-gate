@@ -1,24 +1,217 @@
-[24/10/2025 21:19:59]
+
+[24/10/2025 21:34:09]
+Porte: XOR
+ETA=0.500
+Epochs=100
+Seed=2164937676
+Neurones_cache=5
+MSE_final=0.125086
+-------------------------
+[24/10/2025 21:34:09]
+Porte: AND
+ETA=0.500
+Epochs=100
+Seed=4055331117
+Neurones_cache=5
+MSE_final=0.082427
+-------------------------
+[24/10/2025 21:34:09]
+Porte: OR
+ETA=0.500
+Epochs=100
+Seed=782393327
+Neurones_cache=5
+MSE_final=0.062558
+-------------------------
+[24/10/2025 21:34:42]
+Porte: AND
+ETA=0.500
+Epochs=1000
+Seed=2522974635
+Neurones_cache=5
+MSE_final=0.000901
+-------------------------
+[24/10/2025 21:34:42]
+Porte: OR
+ETA=0.500
+Epochs=1000
+Seed=2505702805
+Neurones_cache=5
+MSE_final=0.000534
+-------------------------
+[24/10/2025 21:34:42]
+Porte: XOR
+ETA=0.500
+Epochs=1000
+Seed=2951680077
+Neurones_cache=5
+MSE_final=0.101093
+-------------------------
+[24/10/2025 21:35:07]
+Porte: OR
+ETA=0.500
+Epochs=10000
+Seed=4168732722
+Neurones_cache=5
+MSE_final=0.000030
+-------------------------
+[24/10/2025 21:35:07]
+Porte: XOR
+ETA=0.500
+Epochs=10000
+Seed=1483660565
+Neurones_cache=5
+MSE_final=0.000118
+-------------------------
+[24/10/2025 21:35:07]
+Porte: AND
+ETA=0.500
+Epochs=10000
+Seed=3902628408
+Neurones_cache=5
+MSE_final=0.000040
+-------------------------
+[24/10/2025 21:35:32]
+Porte: OR
+ETA=0.500
+Epochs=20000
+Seed=3640026843
+Neurones_cache=5
+MSE_final=0.000013
+-------------------------
+[24/10/2025 21:35:32]
+Porte: AND
+ETA=0.500
+Epochs=20000
+Seed=902001379
+Neurones_cache=5
+MSE_final=0.000019
+-------------------------
+[24/10/2025 21:35:32]
+Porte: XOR
+ETA=0.500
+Epochs=20000
+Seed=195650779
+Neurones_cache=5
+MSE_final=0.000070
+-------------------------
+[24/10/2025 21:36:03]
 Porte: OR
 ETA=0.050
-Epochs=20000
-Seed=4146329959
+Epochs=100
+Seed=3969788617
 Neurones_cache=5
-MSE_final=0.000201
+MSE_final=0.095179
 -------------------------
-[24/10/2025 21:19:59]
+[24/10/2025 21:36:03]
 Porte: AND
 ETA=0.050
-Epochs=20000
-Seed=901684865
+Epochs=100
+Seed=1282958884
 Neurones_cache=5
-MSE_final=0.000329
+MSE_final=0.089994
 -------------------------
-[24/10/2025 21:19:59]
+[24/10/2025 21:36:03]
+Porte: XOR
+ETA=0.050
+Epochs=100
+Seed=3767984185
+Neurones_cache=5
+MSE_final=0.125102
+-------------------------
+[24/10/2025 21:36:11]
+Porte: AND
+ETA=0.050
+Epochs=1000
+Seed=1589008180
+Neurones_cache=5
+MSE_final=0.065723
+-------------------------
+[24/10/2025 21:36:12]
+Porte: XOR
+ETA=0.050
+Epochs=1000
+Seed=4087908482
+Neurones_cache=5
+MSE_final=0.125017
+-------------------------
+[24/10/2025 21:36:12]
+Porte: OR
+ETA=0.050
+Epochs=1000
+Seed=4153650199
+Neurones_cache=5
+MSE_final=0.060565
+-------------------------
+[24/10/2025 21:36:27]
+Porte: AND
+ETA=0.050
+Epochs=10000
+Seed=4023260958
+Neurones_cache=5
+MSE_final=0.000812
+-------------------------
+[24/10/2025 21:36:27]
+Porte: OR
+ETA=0.050
+Epochs=10000
+Seed=373192840
+Neurones_cache=5
+MSE_final=0.000579
+-------------------------
+[24/10/2025 21:36:27]
+Porte: XOR
+ETA=0.050
+Epochs=10000
+Seed=2380292555
+Neurones_cache=5
+MSE_final=0.124400
+-------------------------
+[24/10/2025 21:36:55]
 Porte: XOR
 ETA=0.050
 Epochs=20000
-Seed=1253035636
+Seed=1029131039
 Neurones_cache=5
-MSE_final=0.002491
+MSE_final=0.001982
+-------------------------
+[24/10/2025 21:36:55]
+Porte: OR
+ETA=0.050
+Epochs=20000
+Seed=1521359960
+Neurones_cache=5
+MSE_final=0.000195
+-------------------------
+[24/10/2025 21:36:55]
+Porte: AND
+ETA=0.050
+Epochs=20000
+Seed=2460656881
+Neurones_cache=5
+MSE_final=0.000329
+-------------------------
+[24/10/2025 21:37:15]
+Porte: AND
+ETA=0.050
+Epochs=30000
+Seed=1974914226
+Neurones_cache=5
+MSE_final=0.000165
+-------------------------
+[24/10/2025 21:37:15]
+Porte: OR
+ETA=0.050
+Epochs=30000
+Seed=3858023323
+Neurones_cache=5
+MSE_final=0.000135
+-------------------------
+[24/10/2025 21:37:15]
+Porte: XOR
+ETA=0.050
+Epochs=30000
+Seed=2008426412
+Neurones_cache=5
+MSE_final=0.000974
 -------------------------
