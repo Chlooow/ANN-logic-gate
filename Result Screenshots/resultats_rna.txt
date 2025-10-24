@@ -1,0 +1,24 @@
+[24/10/2025 21:19:59]
+Porte: OR
+ETA=0.050
+Epochs=20000
+Seed=4146329959
+Neurones_cache=5
+MSE_final=0.000201
+-------------------------
+[24/10/2025 21:19:59]
+Porte: AND
+ETA=0.050
+Epochs=20000
+Seed=901684865
+Neurones_cache=5
+MSE_final=0.000329
+-------------------------
+[24/10/2025 21:19:59]
+Porte: XOR
+ETA=0.050
+Epochs=20000
+Seed=1253035636
+Neurones_cache=5
+MSE_final=0.002491
+-------------------------
