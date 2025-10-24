@@ -13,13 +13,18 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
+
+// --- pour enregistrer les resultats quelque part
+
+#define RESULT_FILE "resultats_rna.txt"
 
 // ---  INITIALISATION DU RN  ---
 
 #define ENTREE 2
 #define CACHEE 5 // nombre de neurones
 #define SORTIE 1
-#define EPOCHS 10000
+#define EPOCHS 20000
 
 // base de la structure du réseau neuronal
 typedef struct {
@@ -60,6 +65,8 @@ typedef struct {
 
 // mutex
 pthread_mutex_t print_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 
 // ------------------------------------------
 
@@ -171,7 +178,7 @@ void train(RNA *reseau, const float targets[4], int epochs, float eta, int threa
     }
 }
 
-void test_network(const RNA *reseau, const float targets[4], const char *porte) {
+double test_network(const RNA *reseau, const float targets[4], const char *porte) {
     double cs[CACHEE];
     double mse = 0.0;
     int correct = 0;
@@ -182,7 +189,7 @@ void test_network(const RNA *reseau, const float targets[4], const char *porte) 
         printf("in=(%.1f, %.1f) -> y=%.6f target=%.1f\n",
                inputs[s][0], inputs[s][1], y, targets[s]);
         
-         double d = targets[s] - y;
+        double d = targets[s] - y;
         mse += d * d;
         int pred = (y >= 0.5) ? 1 : 0;
         if (pred == (int)targets[s]) correct++;
@@ -190,6 +197,35 @@ void test_network(const RNA *reseau, const float targets[4], const char *porte) 
     mse = 0.5 * (mse / 4.0);
     printf("MSE(avg, 0.5 factor)=%.6f  accuracy=%d/4\n\n", mse, correct);
     pthread_mutex_unlock(&print_mutex);
+
+    return mse;
+
+}
+
+void save_result(const char *porte, float eta, unsigned int seed, int epochs, int nb_cachee, double mse) {
+    // pour sauvegarder une trace
+    pthread_mutex_lock(&file_mutex);
+    FILE *f = fopen(RESULT_FILE, "a");
+    if (f == NULL) {
+        perror("Ouverture : Pb ouverture fichier resultats");
+        return;
+    } else {
+        time_t now = time(NULL);
+        struct tm *t = localtime(&now);
+        char buffer[64];
+        strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", t);
+        
+        fprintf(f, "[%s]\n", buffer);
+        fprintf(f, "Porte: %s\n", porte);
+        fprintf(f, "ETA=%.3f\n", eta);
+        fprintf(f, "Epochs=%d\n", EPOCHS);
+        fprintf(f, "Seed=%u\n", seed);
+        fprintf(f, "Neurones_cache=%d\n", CACHEE);
+        fprintf(f, "MSE_final=%.6f\n", mse);
+        fprintf(f, "-------------------------\n");
+        fclose(f);
+    }
+    pthread_mutex_unlock(&file_mutex);
 }
 
 void *thread_func(void *arg) {
@@ -199,15 +235,17 @@ void *thread_func(void *arg) {
     init_reseau(&tp->reseau, &tp->seed);
 
     pthread_mutex_lock(&print_mutex);
-    printf("Thread %d: porte=%s seed=%u eta=%.3f\n",
-           tp->thread_id, tp->pl, tp->seed, tp->eta);
+    printf("Thread %d: porte=%s seed=%u eta=%.3f \n neurones cache=%d epochs=%d\n",
+           tp->thread_id, tp->pl, tp->seed, tp->eta, CACHEE, EPOCHS);
     pthread_mutex_unlock(&print_mutex);
 
     /* entraîner */
     train(&tp->reseau, tp->sortie, EPOCHS, tp->eta, tp->thread_id);
 
     /* tester */
-    test_network(&tp->reseau, tp->sortie, tp->pl);
+    double mse = test_network(&tp->reseau, tp->sortie, tp->pl);
+
+    save_result(tp->pl, tp->eta, tp->seed, EPOCHS, CACHEE, mse);
 
     return NULL;
 }
