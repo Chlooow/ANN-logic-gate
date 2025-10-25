@@ -1,4 +1,6 @@
-# Projet RNA Porte logique en C
+# Projet RNA Porte logique en C 
+
+*last update : 25/10/2025*
 
 ## Objectif du problème
 
@@ -79,6 +81,26 @@ où `eta` est le taux d’apprentissage
  - Chaque thread a ses propres poids et biais
  - Utilisation d’un mutex pour l'affichage (pour synchroniser l’affichage)
 
+### Batch learning
+Bien que le réseau soit entraîné sur un dataset très petit (4 exemples pour chaque porte logique), il est possible de considérer l’apprentissage par batch.
+
+- Stochastic Gradient Descent (SGD) : actuellement, le réseau met à jour les poids après chaque exemple. C’est le comportement standard pour un dataset minuscule.
+
+- Batch Gradient Descent : si on regroupe plusieurs exemples en un batch, on peut calculer les gradients pour tout le batch avant de mettre à jour les poids.
+
+- Mini-Batch : combinaison des deux méthodes ci-dessus, où on prend un sous-ensemble du dataset pour calculer les gradients avant mise à jour.
+
+Dans notre projet, nous avons choisi SGD pour sa simplicité et parce que le dataset est petit, ce qui rend les batches inutiles pour l’instant. 
+L’implémentation d’un batch learning serait une extension possible pour explorer la stabilité et la vitesse de convergence sur des datasets plus volumineux.
+
+#### Avec un full-batch Learning
+
+Lors de nos tests sur les portes logiques, nous avons observé que notre réseau de neurones obtenait de bons résultats pour les portes AND et OR, mais rencontrait des difficultés à apprendre la porte XOR. En effet, malgré plusieurs milliers d’itérations (epochs), la valeur de l’erreur quadratique moyenne (MSE) restait bloquée autour de 0.124, indiquant que le réseau n’arrivait pas à converger vers la solution attendue.
+
+J'ai opté pour un apprentissage en full-batch c'est la raison pour laquelle j'ai ce "problème".
+Dans ce mode d'optimisation, le réseau met à jour ses poids une seule fois par epoch, après avoir traité tous les exemples du jeu de données. Concrètement, pour nos quatre combinaisons d’entrées (0,0), (0,1), (1,0) et (1,1), le réseau calcule les erreurs correspondantes, fait la moyenne des gradients, puis applique une mise à jour globale des poids.
+
+
 ------
 
 ### Technologie utilisé
@@ -103,6 +125,14 @@ où `eta` est le taux d’apprentissage
 gcc -o rna rna.c -lpthread -lm
 ./rna
 ```
+
+### Fichiers 
+
+- `rna_chloe.c`: le RNA **sans** batch learning
+- `rnaBatch.c`: le RNA **avec** batch learning
+- `resultats_rna.txt` : resultats enregistré venant de `rna_chloe.c`
+- `resultats_rna_batch.txt` : resultats enregistré venant de `rnaBatch.c`
+- Compte rendu en markdown
 
 ### Ressources utilisées
 
